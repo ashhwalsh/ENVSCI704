@@ -1,5 +1,5 @@
-# ENVSCI 704 - Modelling of Environmental Systems
-# Author: Your Name
+# ENVSCI 704 - Modelling of Environmental Systems - Trial
+# Author: Ashley Walsh
 # Date: 2026-07-27
 
 def main():
