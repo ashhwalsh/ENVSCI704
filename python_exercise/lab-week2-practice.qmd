@@ -1,0 +1,236 @@
+---
+title: "Lab 2: Modelling (practice)"
+author: "Ashley Walsh"
+date: today
+format:
+  html:
+    toc: true
+    code-fold: false
+    embed-resources: true
+execute:
+  warning: false
+---
+
+
+## Setup
+
+```{python}
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+```
+
+## Variables and printing
+
+```{python}
+# variables of different types
+
+concentration = 100.0     # a floating-point number
+day = 0                   # an integer
+site = "Waikato River"    # a string
+is_tidal = True           # a boolean
+
+print(concentration)
+print(day, site, is_tidal)
+```
+
+```{python}
+# f-strings for formatted printing
+
+day = 5
+concentration = 47.6183
+
+print(f"Day {day}: concentration = {concentration} mg/L")       # no rounding
+print(f"Day {day}: concentration = {concentration:.2f} mg/L")   # round to 2 decimals
+print(f"Day {day}: concentration = {concentration:.0f} mg/L")   # round to whole
+```
+
+## Numbers, arithmetic, and rounding
+
+```{python}
+a = 7
+b = 2
+
+print(a + b, a - b, a * b, a / b, a // b, a ** b)
+#   sum, diff, product, division, floor-div, power
+```
+
+```{python}
+# common rounding functions
+x = 3.14159
+
+print(round(x, 2))        # 3.14   — built-in rounding
+print(round(x))           # 3      — no argument = to integer
+print(int(x))             # 3      — truncates towards zero
+
+round(3.5) # python uses "bankers rounding" rounds to nearest even number
+round(2.5) 
+```
+
+## Lists
+
+A list holds several values in order. You will use lists to store time series before we switch to NumPy.
+
+```{python}
+values = [100.0, 95.0, 90.25, 85.7]
+
+print(values)
+print(values[0])       # first item (index 0)
+print(values[1])       # second item
+print(values[-1])      # last item
+print(values[-2])      # second last
+
+print(len(values))     # how many items in the list
+```
+
+Slicing — grab a range with [start:stop] (stop is exclusive):
+
+```{python}
+values = [10, 20, 30, 40, 50, 60, 70, 80]
+
+print(values[0:3])     # [10, 20, 30]  first three
+print(values[2:5])     # [30, 40, 50]  middle
+print(values[:4])      # [10, 20, 30, 40]  from the start
+print(values[4:])      # [50, 60, 70, 80]  to the end
+print(values[-3:])     # [60, 70, 80]  last three
+```
+
+Add to a list with `append()`:
+
+```{python}
+history = [100.0]
+history.append(95.0)
+history.append(90.25)
+
+print(history)
+print(f"Started at {history[0]}, ended at {history[-1]}") # gives the first and last values
+```
+
+## 'for' loops
+
+A loop repeats an action. This is the engine of every numerical model in this course.
+
+The simplest form loops over a range of integers:
+
+```{python}
+for step in range(5):       # goes from 0 to 4 (5 steps)
+    print(f"Step {step}")
+```
+
+You can also loop over the items in a list — very useful when you have a set of parameter values or site names:
+
+```{python}
+for k in [0.02, 0.05, 0.10, 0.20]:
+    print(f"Decay rate k = {k}")
+```
+
+```{python}
+sites = ["Waikato", "Waipa", "Piako"]
+for name in sites:
+    print(f"Loading data for {name}")
+```
+
+`range(start, stop, step)` also takes a step size — handy for skipping every second value:
+```{python}
+for day in range(0, 20, 5):     # 0, 5, 10, 15
+    print(f"Day {day}: take a sample")
+```
+
+Sum values as you loop. This pattern appears constantly in modelling:
+
+```{python}
+total = 0
+for value in [3.2, 4.1, 2.8, 5.5]:
+    total = total + value
+print(f"Sum = {total}")
+print(f"Mean = {total / 4}")
+```
+
+Here is a loop that updates a state variable each step. Read this cell carefully — every model in this part looks like it.
+
+The pattern is:
+
+A **state variable** (concentration)
+A **rule** for its rate of change (- decay_rate * concentration)
+A **loop** over time
+A **history** list so we can plot it later
+
+```{python}
+concentration = 100.0
+decay_rate = 0.05
+dt = 1.0
+history = [concentration]     # store the starting value
+
+for step in range(10):
+    concentration = concentration - decay_rate * concentration * dt
+    history.append(concentration)
+
+print(history)
+```
+
+## Rounding a whole list
+
+Printing 4 decimal places for every step is noisy. Two common ways to clean it up.
+
+Both do the same thing. Start with option 2 until list comprehensions feel natural, then use option 1.
+
+```{python}
+# 1. A list comprehension (concise)
+rounded = [round(c, 2) for c in history]
+print(rounded)
+
+# 2. A plain for loop (verbose but clearer for beginners)
+rounded = []
+for c in history:
+    rounded.append(round(c, 2))
+
+print(rounded)
+```
+
+## Functions
+
+A function packages reusable logic under a name. Once you have written it, you can call it as many times as you like without repeating the code.
+
+**How to build a function**
+Every function you write has the same five parts. Read this diagram before the examples:
+
+```{python}
+def celsius_to_kelvin(t_c):   # 1. def   2. name   3. (inputs):
+    result = t_c + 273.15     # 4. the body — indented, does the work
+    return result             # 5. return — hands a value back
+```
+
+1. `def` — the keyword that tells Python “I am defining a function”.
+2. A **name** — you choose it. Use lowercase words joined by underscores (`celsius_to_kelvin`, `decay_step`). The name should say what the function does.
+3. **Inputs in parentheses, then a colon** — the names inside () are the values the function needs. These are called parameters. End the line with :.
+4. The **body** — one or more lines, each **indented** (4 spaces). This is the work the function does.
+5. `return` — hands one value back to whoever called the function. Without return, the function does its work but gives you nothing back.
+
+:::{.callout-important}
+The indentation is not decoration — it is how Python knows which lines belong to the function. Every line of the body must be indented by the same amount. VS Code adds the 4 spaces for you when you press Enter after the :.
+:::
+
+**Defining a function does not run it.** You *call* it separately, by writing its name followed by values in parentheses:
+```{python}
+def celsius_to_kelvin(t_c):
+    result = t_c + 273.15
+    return result
+
+# nothing has printed yet — we only defined the function above.
+# now we CALL it three times:
+print(celsius_to_kelvin(0))
+print(celsius_to_kelvin(25))
+print(celsius_to_kelvin(-40))
+```
+
+The value you pass in (`0, 25, -40`) lands in the parameter `t_c` for the duration of that call. Once you understand this one idea — values go in, a value comes back — you understand functions.
+
+You do not need a separate `result` variable; you can return the expression directly:
+
+```{python}
+def celsius_to_kelvin(t_c):
+    return t_c + 273.15
+
+print(celsius_to_kelvin(100))
+```
+

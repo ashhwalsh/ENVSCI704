@@ -1,0 +1,570 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "484e293a",
+   "metadata": {},
+   "source": [
+    "---\n",
+    "title: \"Lab 2: Modelling (practice)\"\n",
+    "author: \"Ashley Walsh\"\n",
+    "date: today\n",
+    "format:\n",
+    "  html:\n",
+    "    toc: true\n",
+    "    code-fold: false\n",
+    "    embed-resources: true\n",
+    "execute:\n",
+    "  warning: false\n",
+    "---\n",
+    "\n",
+    "\n",
+    "## Setup"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "d924d96f",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import numpy as np\n",
+    "import pandas as pd\n",
+    "import matplotlib.pyplot as plt"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "b3a666cb",
+   "metadata": {},
+   "source": [
+    "## Variables and printing"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "60b72498",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "100.0\n",
+      "0 Waikato River True\n"
+     ]
+    }
+   ],
+   "source": [
+    "# variables of different types\n",
+    "\n",
+    "concentration = 100.0     # a floating-point number\n",
+    "day = 0                   # an integer\n",
+    "site = \"Waikato River\"    # a string\n",
+    "is_tidal = True           # a boolean\n",
+    "\n",
+    "print(concentration)\n",
+    "print(day, site, is_tidal)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "418bffc2",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Day 5: concentration = 47.6183 mg/L\n",
+      "Day 5: concentration = 47.62 mg/L\n",
+      "Day 5: concentration = 48 mg/L\n"
+     ]
+    }
+   ],
+   "source": [
+    "# f-strings for formatted printing\n",
+    "\n",
+    "day = 5\n",
+    "concentration = 47.6183\n",
+    "\n",
+    "print(f\"Day {day}: concentration = {concentration} mg/L\")       # no rounding\n",
+    "print(f\"Day {day}: concentration = {concentration:.2f} mg/L\")   # round to 2 decimals\n",
+    "print(f\"Day {day}: concentration = {concentration:.0f} mg/L\")   # round to whole"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "06773adc",
+   "metadata": {},
+   "source": [
+    "## Numbers, arithmetic, and rounding"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "a2bc38f7",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "9 5 14 3.5 3 49\n"
+     ]
+    }
+   ],
+   "source": [
+    "a = 7\n",
+    "b = 2\n",
+    "\n",
+    "print(a + b, a - b, a * b, a / b, a // b, a ** b)\n",
+    "#   sum, diff, product, division, floor-div, power"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "cf4eefc4",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "3.14\n",
+      "3\n",
+      "3\n"
+     ]
+    },
+    {
+     "data": {
+      "text/plain": [
+       "2"
+      ]
+     },
+     "execution_count": 5,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# common rounding functions\n",
+    "x = 3.14159\n",
+    "\n",
+    "print(round(x, 2))        # 3.14   — built-in rounding\n",
+    "print(round(x))           # 3      — no argument = to integer\n",
+    "print(int(x))             # 3      — truncates towards zero\n",
+    "\n",
+    "round(3.5) # python uses \"bankers rounding\" rounds to nearest even number\n",
+    "round(2.5) "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "cce39a8e",
+   "metadata": {},
+   "source": [
+    "## Lists\n",
+    "\n",
+    "A list holds several values in order. You will use lists to store time series before we switch to NumPy."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "22a3432f",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[100.0, 95.0, 90.25, 85.7]\n",
+      "100.0\n",
+      "95.0\n",
+      "85.7\n",
+      "90.25\n",
+      "4\n"
+     ]
+    }
+   ],
+   "source": [
+    "values = [100.0, 95.0, 90.25, 85.7]\n",
+    "\n",
+    "print(values)\n",
+    "print(values[0])       # first item (index 0)\n",
+    "print(values[1])       # second item\n",
+    "print(values[-1])      # last item\n",
+    "print(values[-2])      # second last\n",
+    "\n",
+    "print(len(values))     # how many items in the list"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "5a3aa94c",
+   "metadata": {},
+   "source": [
+    "Slicing — grab a range with [start:stop] (stop is exclusive):"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "id": "b455886b",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[10, 20, 30]\n",
+      "[30, 40, 50]\n",
+      "[10, 20, 30, 40]\n",
+      "[50, 60, 70, 80]\n",
+      "[60, 70, 80]\n"
+     ]
+    }
+   ],
+   "source": [
+    "values = [10, 20, 30, 40, 50, 60, 70, 80]\n",
+    "\n",
+    "print(values[0:3])     # [10, 20, 30]  first three\n",
+    "print(values[2:5])     # [30, 40, 50]  middle\n",
+    "print(values[:4])      # [10, 20, 30, 40]  from the start\n",
+    "print(values[4:])      # [50, 60, 70, 80]  to the end\n",
+    "print(values[-3:])     # [60, 70, 80]  last three"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "c962b868",
+   "metadata": {},
+   "source": [
+    "Add to a list with `append()`:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "id": "16ec65bb",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[100.0, 95.0, 90.25]\n",
+      "Started at 100.0, ended at 90.25\n"
+     ]
+    }
+   ],
+   "source": [
+    "history = [100.0]\n",
+    "history.append(95.0)\n",
+    "history.append(90.25)\n",
+    "\n",
+    "print(history)\n",
+    "print(f\"Started at {history[0]}, ended at {history[-1]}\") # gives the first and last values"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "1c3f9f8f",
+   "metadata": {},
+   "source": [
+    "## 'for' loops\n",
+    "\n",
+    "A loop repeats an action. This is the engine of every numerical model in this course.\n",
+    "\n",
+    "The simplest form loops over a range of integers:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "id": "9b668c0e",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Step 0\n",
+      "Step 1\n",
+      "Step 2\n",
+      "Step 3\n",
+      "Step 4\n"
+     ]
+    }
+   ],
+   "source": [
+    "for step in range(5):       # goes from 0 to 4 (5 steps)\n",
+    "    print(f\"Step {step}\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "7e0a4df8",
+   "metadata": {},
+   "source": [
+    "You can also loop over the items in a list — very useful when you have a set of parameter values or site names:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "id": "aec9cba8",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Decay rate k = 0.02\n",
+      "Decay rate k = 0.05\n",
+      "Decay rate k = 0.1\n",
+      "Decay rate k = 0.2\n"
+     ]
+    }
+   ],
+   "source": [
+    "for k in [0.02, 0.05, 0.10, 0.20]:\n",
+    "    print(f\"Decay rate k = {k}\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "id": "03ba3fc1",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Loading data for Waikato\n",
+      "Loading data for Waipa\n",
+      "Loading data for Piako\n"
+     ]
+    }
+   ],
+   "source": [
+    "sites = [\"Waikato\", \"Waipa\", \"Piako\"]\n",
+    "for name in sites:\n",
+    "    print(f\"Loading data for {name}\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "19c43ec6",
+   "metadata": {},
+   "source": [
+    "`range(start, stop, step)` also takes a step size — handy for skipping every second value:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "id": "76221d3e",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Day 0: take a sample\n",
+      "Day 5: take a sample\n",
+      "Day 10: take a sample\n",
+      "Day 15: take a sample\n"
+     ]
+    }
+   ],
+   "source": [
+    "for day in range(0, 20, 5):     # 0, 5, 10, 15\n",
+    "    print(f\"Day {day}: take a sample\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "bd31082b",
+   "metadata": {},
+   "source": [
+    "Sum values as you loop. This pattern appears constantly in modelling:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "id": "39e17f24",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Sum = 15.6\n",
+      "Mean = 3.9\n"
+     ]
+    }
+   ],
+   "source": [
+    "total = 0\n",
+    "for value in [3.2, 4.1, 2.8, 5.5]:\n",
+    "    total = total + value\n",
+    "print(f\"Sum = {total}\")\n",
+    "print(f\"Mean = {total / 4}\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "b2cd0125",
+   "metadata": {},
+   "source": [
+    "Here is a loop that updates a state variable each step. Read this cell carefully — every model in this part looks like it.\n",
+    "\n",
+    "The pattern is:\n",
+    "\n",
+    "A **state variable** (concentration)\n",
+    "A **rule** for its rate of change (- decay_rate * concentration)\n",
+    "A **loop** over time\n",
+    "A **history** list so we can plot it later"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "id": "ad446f53",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[100.0, 95.0, 90.25, 85.7375, 81.450625, 77.37809375, 73.5091890625, 69.833729609375, 66.34204312890625, 63.02494097246094, 59.87369392383789]\n"
+     ]
+    }
+   ],
+   "source": [
+    "concentration = 100.0\n",
+    "decay_rate = 0.05\n",
+    "dt = 1.0\n",
+    "history = [concentration]     # store the starting value\n",
+    "\n",
+    "for step in range(10):\n",
+    "    concentration = concentration - decay_rate * concentration * dt\n",
+    "    history.append(concentration)\n",
+    "\n",
+    "print(history)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "9e21da16",
+   "metadata": {},
+   "source": [
+    "## Rounding a whole list\n",
+    "\n",
+    "Printing 4 decimal places for every step is noisy. Two common ways to clean it up.\n",
+    "\n",
+    "Both do the same thing. Start with option 2 until list comprehensions feel natural, then use option 1."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "id": "47c60bde",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[100.0, 95.0, 90.25, 85.74, 81.45, 77.38, 73.51, 69.83, 66.34, 63.02, 59.87]\n",
+      "[100.0, 95.0, 90.25, 85.74, 81.45, 77.38, 73.51, 69.83, 66.34, 63.02, 59.87]\n"
+     ]
+    }
+   ],
+   "source": [
+    "# 1. A list comprehension (concise)\n",
+    "rounded = [round(c, 2) for c in history]\n",
+    "print(rounded)\n",
+    "\n",
+    "# 2. A plain for loop (verbose but clearer for beginners)\n",
+    "rounded = []\n",
+    "for c in history:\n",
+    "    rounded.append(round(c, 2))\n",
+    "\n",
+    "print(rounded)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "341b2a2c",
+   "metadata": {},
+   "source": [
+    "## Functions\n",
+    "\n",
+    "A function packages reusable logic under a name. Once you have written it, you can call it as many times as you like without repeating the code.\n",
+    "\n",
+    "**How to build a function**\n",
+    "Every function you write has the same five parts. Read this diagram before the examples:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 16,
+   "id": "1af145de",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def celsius_to_kelvin(t_c):   # 1. def   2. name   3. (inputs):\n",
+    "    result = t_c + 273.15     # 4. the body — indented, does the work\n",
+    "    return result             # 5. return — hands a value back"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f77881d8",
+   "metadata": {},
+   "source": [
+    "1. `def` — the keyword that tells Python “I am defining a function”.\n",
+    "2. A **name** — you choose it. Use lowercase words joined by underscores (`celsius_to_kelvin`, `decay_step`). The name should say what the function does.\n",
+    "3. **Inputs in parentheses, then a colon** — the names inside () are the values the function needs. These are called parameters. End the line with :.\n",
+    "4. The **body** — one or more lines, each **indented** (4 spaces). This is the work the function does.\n",
+    "5. `return` — hands one value back to whoever called the function. Without return, the function does its work but gives you nothing back.\n",
+    "\n",
+    ":::{.callout-important}\n",
+    "The indentation is not decoration — it is how Python knows which lines belong to the function. Every line of the body must be indented by the same amount. VS Code adds the 4 spaces for you when you press Enter after the :.\n",
+    ":::\n"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3",
+   "path": "c:\\Users\\ashle\\Documents\\ENVSCI704\\.venv\\share\\jupyter\\kernels\\python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.13.14"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
