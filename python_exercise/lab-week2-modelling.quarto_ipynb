@@ -1,0 +1,335 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "---\n",
+        "title: \"Lab 2: Modelling\"\n",
+        "author: \"Ashley Walsh (440295983)\"\n",
+        "date: today\n",
+        "format:\n",
+        "  html:\n",
+        "    toc: true\n",
+        "    code-fold: false\n",
+        "    embed-resources: true\n",
+        "execute:\n",
+        "  warning: false\n",
+        "---\n",
+        "\n",
+        "<!--\n",
+        "============================================================\n",
+        "ENVSCI 704 lab template\n",
+        "============================================================\n",
+        "How to use this file:\n",
+        "\n",
+        "1. Copy it into your GitHub course repo and rename it, e.g.\n",
+        "   `lab-02-numerical.qmd`.\n",
+        "2. Fill in the YAML header above (title, your name, student ID).\n",
+        "3. Work through the tasks below. Delete any sections you do not need.\n",
+        "4. Render locally with the \"Render\" button in VS Code, or:\n",
+        "       quarto render lab-XX-topic.qmd\n",
+        "5. Commit and push. Submit the link on Canvas.\n",
+        "\n",
+        "Tips:\n",
+        "- One question, one small code cell — do not put everything in one big block.\n",
+        "- Write short answers in prose *between* code cells, not as comments in code.\n",
+        "- Rename figures with `#| fig-cap: \"...\"` so the reader knows what they are.\n",
+        "- Round floats when you print: `f\"{value:.2f}\"`.\n",
+        "============================================================\n",
+        "-->\n",
+        "\n",
+        "## Setup"
+      ],
+      "id": "af98789d"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "import numpy as np\n",
+        "import pandas as pd\n",
+        "import matplotlib.pyplot as plt"
+      ],
+      "id": "22f743c4",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Part A: Tracer decay and step size (numerical)\n",
+        "\n",
+        "This code is creating numerical model of the concentration (C) over time and comparing it on a plot to the known exact value."
+      ],
+      "id": "b59d4643"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "# warmup task\n",
+        "def decay_numerical(C0, k, dt, t_end):\n",
+        "    \"\"\"Return arrays of time and concentration for forward-Euler tracer decay.\"\"\"\n",
+        "    n = int(t_end / dt)\n",
+        "    C = C0\n",
+        "    ts = [0.0]\n",
+        "    Cs = [C0]\n",
+        "    for i in range(n):\n",
+        "        C = C + (-k * C) * dt          # forward difference\n",
+        "        ts.append((i + 1) * dt)\n",
+        "        Cs.append(C)\n",
+        "    return np.array(ts), np.array(Cs)\n",
+        "\n",
+        "# The exact answer, for comparison\n",
+        "C0, k, t_end = 100.0, 0.05, 60\n",
+        "t_fine = np.linspace(0, t_end, 200)\n",
+        "exact = C0 * np.exp(-k * t_fine)\n",
+        "\n",
+        "fig, ax = plt.subplots(figsize=(7, 4))\n",
+        "ax.plot(t_fine, exact, \"k-\", label=\"Exact\")\n",
+        "\n",
+        "for dt in [1.0]:\n",
+        "    ts, Cs = decay_numerical(C0, k, dt, t_end)\n",
+        "    ax.plot(ts, Cs, \"o--\", markersize=4, label=f\"dt = {dt}\")\n",
+        "\n",
+        "ax.set_xlabel(\"Time\")\n",
+        "ax.set_ylabel(\"Concentration C\")\n",
+        "ax.set_title(\"Tracer decay: numerical vs exact\")\n",
+        "ax.legend()\n",
+        "plt.show()"
+      ],
+      "id": "5f2b169a",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "**Answer to task A1:** _(one to three sentences)_\n",
+        "...\n",
+        "\n",
+        "**Answer to task A2:** _(one to three sentences)_\n",
+        "..."
+      ],
+      "id": "ebf17b6d"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "# task A3\n",
+        "def decay_numerical(C0, k, dt, t_end):\n",
+        "    \"\"\"Return arrays of time and concentration for forward-Euler tracer decay.\"\"\"\n",
+        "    n = int(t_end / dt)\n",
+        "    C = C0\n",
+        "    ts = [0.0]\n",
+        "    Cs = [C0]\n",
+        "    for i in range(n):\n",
+        "        C = C + (-k * C) * dt          # forward difference\n",
+        "        ts.append((i + 1) * dt)\n",
+        "        Cs.append(C)\n",
+        "    return np.array(ts), np.array(Cs)\n",
+        "\n",
+        "# The exact answer, for comparison\n",
+        "C0, k, t_end = 100.0, 1, 6.0\n",
+        "t_fine = np.linspace(0, t_end, 200)\n",
+        "exact = C0 * np.exp(-k * t_fine)\n",
+        "\n",
+        "fig, ax = plt.subplots(figsize=(7, 4))\n",
+        "ax.plot(t_fine, exact, \"k-\", label=\"Exact\")\n",
+        "\n",
+        "for dt in [0.5, 1.0, 2.0, 2.5]:\n",
+        "    ts, Cs = decay_numerical(C0, k, dt, t_end)\n",
+        "    ax.plot(ts, Cs, \"o--\", markersize=4, label=f\"dt = {dt}\")\n",
+        "\n",
+        "ax.set_xlabel(\"Time\")\n",
+        "ax.set_ylabel(\"Concentration C\")\n",
+        "ax.set_title(\"Tracer decay: numerical vs exact\")\n",
+        "ax.legend()\n",
+        "plt.show()"
+      ],
+      "id": "7b08897f",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "**Answer to task A3:**\n",
+        "The largest `dt` that still gives a non-negative curve ....\n",
+        "\n",
+        "**Answer to task A4:**\n",
+        "....\n",
+        "\n",
+        "## Part B: Reservoir box model (process-based)"
+      ],
+      "id": "25768f1e"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "# reservoir code copied from Chapter 2.2 Example 1\n",
+        "\n",
+        "# ---- Parameters ----\n",
+        "V = 1.0e6        # lake volume (m^3)\n",
+        "Q = 5.0e3        # river inflow (m^3 per day)\n",
+        "C_in = 10.0      # incoming concentration (mg/L)\n",
+        "k = 0.05         # in-lake decay rate (per day)\n",
+        "\n",
+        "# ---- Time settings ----\n",
+        "dt = 1.0         # time step (days)\n",
+        "days = 200\n",
+        "\n",
+        "# ---- Initial condition ----\n",
+        "C = 0.0          # clean lake\n",
+        "\n",
+        "# ---- Storage ----\n",
+        "history = [C]\n",
+        "\n",
+        "# ---- Time loop ----\n",
+        "for _ in range(days):\n",
+        "    dCdt = (Q * C_in - Q * C - k * V * C) / V   # the rate of change\n",
+        "    C = C + dCdt * dt                            # forward difference\n",
+        "    history.append(C)\n",
+        "\n",
+        "# ---- A quick look at the numbers ----\n",
+        "print(f\"Started at {history[0]:.2f} mg/L\")\n",
+        "print(f\"After 10 days: {history[10]:.2f} mg/L\")\n",
+        "print(f\"After 50 days: {history[50]:.2f} mg/L\")\n",
+        "print(f\"After {days} days: {history[-1]:.2f} mg/L\")"
+      ],
+      "id": "371fbc56",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "**Answer to task B1**\n",
+        "....."
+      ],
+      "id": "b610516f"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "# steady state values\n",
+        "\n",
+        "C_star = (Q * C_in) / (Q + k * V)\n",
+        "print(f\"Analytical steady state: {C_star:.2f} mg/L\")\n",
+        "print(f\"Numerical final value:   {history[-1]:.2f} mg/L\")\n",
+        "print(f\"Difference:              {abs(C_star - history[-1]):.4f} mg/L\")"
+      ],
+      "id": "d5f4a212",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "**Answer to task B2**\n",
+        "Concentrations of pollutions increased at a faster rate when starting from a polluted lake, ....."
+      ],
+      "id": "c3558651"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "# ---- Parameters ----\n",
+        "V = 1.0e6        # lake volume (m^3)\n",
+        "Q = 5.0e3        # river inflow (m^3 per day)\n",
+        "C_in = 10.0      # incoming concentration (mg/L)\n",
+        "k = 0.05         # in-lake decay rate (per day)\n",
+        "\n",
+        "# ---- Time settings ----\n",
+        "dt = 1.0         # time step (days)\n",
+        "days = 200\n",
+        "\n",
+        "# ---- Initial condition ----\n",
+        "C = 20.0          # clean lake\n",
+        "\n",
+        "# ---- Storage ----\n",
+        "history = [C]\n",
+        "\n",
+        "# ---- Time loop ----\n",
+        "for _ in range(days):\n",
+        "    dCdt = (Q * C_in - Q * C - k * V * C) / V   # the rate of change\n",
+        "    C = C + dCdt * dt                            # forward difference\n",
+        "    history.append(C)\n",
+        "\n",
+        "# ---- A quick look at the numbers ----\n",
+        "print(f\"Started at {history[0]:.2f} mg/L\")\n",
+        "print(f\"After 10 days: {history[10]:.2f} mg/L\")\n",
+        "print(f\"After 50 days: {history[50]:.2f} mg/L\")\n",
+        "print(f\"After {days} days: {history[-1]:.2f} mg/L\")"
+      ],
+      "id": "4804ebf0",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "**Answer to task B3**"
+      ],
+      "id": "e186ede1"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "# your code here\n",
+        "\n",
+        "fig, ax = plt.subplots(figsize=(6, 4))\n",
+        "# ax.plot(...)\n",
+        "ax.set_xlabel(\"...\")\n",
+        "ax.set_ylabel(\"...\")\n",
+        "ax.set_title(\"...\")\n",
+        "plt.show()"
+      ],
+      "id": "5ce65054",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "**Answer to task B1:** _(short answer)_\n",
+        "\n",
+        "## Reflection\n",
+        "\n",
+        "Write two to four sentences on what surprised you, what you got stuck on, and what you would do differently next time. This section is worth marks — do not leave it blank.\n",
+        "\n",
+        "## Checklist before you push\n",
+        "\n",
+        "- [ ] Every task has a code cell **and** a short prose answer\n",
+        "- [ ] Every figure has axis labels and a title\n",
+        "- [ ] Your name and student ID are in the YAML header\n",
+        "- [ ] The file renders cleanly (no red error boxes in the HTML output)\n",
+        "- [ ] Filename is `lab-XX-topic.qmd`, not `Untitled.qmd`"
+      ],
+      "id": "988ad1ac"
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "name": "python3",
+      "language": "python",
+      "display_name": "Python 3 (ipykernel)",
+      "path": "c:\\Users\\ashle\\Documents\\ENVSCI704\\.venv\\share\\jupyter\\kernels\\python3"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}

@@ -1,6 +1,6 @@
 ---
-title: "Lab XX: [replace with the lab title]"
-author: "Your Name (Student ID)"
+title: "Lab 2: Modelling"
+author: "Ashley Walsh (440295983)"
 date: today
 format:
   html:
@@ -41,19 +41,206 @@ import pandas as pd
 import matplotlib.pyplot as plt
 ```
 
-## Part A: [rename to match the lab]
+## Part A: Tracer decay and step size (numerical)
 
-Write one sentence describing what this part is doing.
+This code is creating numerical model of the concentration (C) over time and comparing it on a plot to the known exact value.
+
+**Answer to task A1:** 
+This changes the rate at which the concentration changes, effectively controling the curvature of the plotted variable over time, ....
 
 ```{python}
-# your code here
+# "warmup" copy of tracer_decay code
+
+def decay_numerical(C0, k, dt, t_end):
+    """Return arrays of time and concentration for forward-Euler tracer decay."""
+    n = int(t_end / dt)
+    C = C0
+    ts = [0.0]
+    Cs = [C0]
+    for i in range(n):
+        C = C + (-k * C) * dt          # forward difference
+        ts.append((i + 1) * dt)
+        Cs.append(C)
+    return np.array(ts), np.array(Cs)
+
+# The exact answer, for comparison
+C0, k, t_end = 100.0, 0.05, 60
+t_fine = np.linspace(0, t_end, 200)
+exact = C0 * np.exp(-k * t_fine)
+
+fig, ax = plt.subplots(figsize=(7, 4))
+ax.plot(t_fine, exact, "k-", label="Exact")
+
+for dt in [1.0]:
+    ts, Cs = decay_numerical(C0, k, dt, t_end)
+    ax.plot(ts, Cs, "o--", markersize=4, label=f"dt = {dt}")
+
+ax.set_xlabel("Time")
+ax.set_ylabel("Concentration C")
+ax.set_title("Tracer decay: numerical vs exact")
+ax.legend()
+plt.show()
 ```
 
-**Answer to task A1:** _(one to three sentences)_
 
-**Answer to task A2:** _(one to three sentences)_
+**Answer to task A2:**
+The `dt` genuinly begins to disagree with the exact curve when `dt = 5.0` - ...
 
-## Part B: [rename to match the lab]
+```{python}
+# task A2 - change `dt` to 2.0
+
+def decay_numerical(C0, k, dt, t_end):
+    """Return arrays of time and concentration for forward-Euler tracer decay."""
+    n = int(t_end / dt)
+    C = C0
+    ts = [0.0]
+    Cs = [C0]
+    for i in range(n):
+        C = C + (-k * C) * dt          # forward difference
+        ts.append((i + 1) * dt)
+        Cs.append(C)
+    return np.array(ts), np.array(Cs)
+
+# The exact answer, for comparison
+C0, k, t_end = 100.0, 0.05, 60
+t_fine = np.linspace(0, t_end, 200)
+exact = C0 * np.exp(-k * t_fine)
+
+fig, ax = plt.subplots(figsize=(7, 4))
+ax.plot(t_fine, exact, "k-", label="Exact")
+
+for dt in [1.0, 2.0, 5.0]:
+    ts, Cs = decay_numerical(C0, k, dt, t_end)
+    ax.plot(ts, Cs, "o--", markersize=4, label=f"dt = {dt}")
+
+ax.set_xlabel("Time")
+ax.set_ylabel("Concentration C")
+ax.set_title("Tracer decay: numerical vs exact")
+ax.legend()
+plt.show()
+```
+
+**Answer to task A3:**
+The largest `dt` that still gives a non-negative curve is when `dt = 2.0` ....
+
+```{python}
+# task A3
+def decay_numerical(C0, k, dt, t_end):
+    """Return arrays of time and concentration for forward-Euler tracer decay."""
+    n = int(t_end / dt)
+    C = C0
+    ts = [0.0]
+    Cs = [C0]
+    for i in range(n):
+        C = C + (-k * C) * dt          # forward difference
+        ts.append((i + 1) * dt)
+        Cs.append(C)
+    return np.array(ts), np.array(Cs)
+
+# The exact answer, for comparison
+C0, k, t_end = 100.0, 1, 6.0
+t_fine = np.linspace(0, t_end, 200)
+exact = C0 * np.exp(-k * t_fine)
+
+fig, ax = plt.subplots(figsize=(7, 4))
+ax.plot(t_fine, exact, "k-", label="Exact")
+
+for dt in [0.5, 1.0, 2.0, 2.5]:
+    ts, Cs = decay_numerical(C0, k, dt, t_end)
+    ax.plot(ts, Cs, "o--", markersize=4, label=f"dt = {dt}")
+
+ax.set_xlabel("Time")
+ax.set_ylabel("Concentration C")
+ax.set_title("Tracer decay: numerical vs exact")
+ax.legend()
+plt.show()
+```
+
+**Answer to task A4:**
+....
+
+"In two to three sentences, explain why a large dt makes the numerical curve overshoot into negative values. Refer to the update rule"
+
+## Part B: Reservoir box model (process-based)
+
+```{python}
+# reservoir code copied from Chapter 2.2 Example 1
+
+# ---- Parameters ----
+V = 1.0e6        # lake volume (m^3)
+Q = 5.0e3        # river inflow (m^3 per day)
+C_in = 10.0      # incoming concentration (mg/L)
+k = 0.05         # in-lake decay rate (per day)
+
+# ---- Time settings ----
+dt = 1.0         # time step (days)
+days = 200
+
+# ---- Initial condition ----
+C = 0.0          # clean lake
+
+# ---- Storage ----
+history = [C]
+
+# ---- Time loop ----
+for _ in range(days):
+    dCdt = (Q * C_in - Q * C - k * V * C) / V   # the rate of change
+    C = C + dCdt * dt                            # forward difference
+    history.append(C)
+
+# ---- A quick look at the numbers ----
+print(f"Started at {history[0]:.2f} mg/L")
+print(f"After 10 days: {history[10]:.2f} mg/L")
+print(f"After 50 days: {history[50]:.2f} mg/L")
+print(f"After {days} days: {history[-1]:.2f} mg/L")
+```
+
+**Answer to task B1**
+.....
+
+```{python}
+# steady state values
+
+C_star = (Q * C_in) / (Q + k * V)
+print(f"Analytical steady state: {C_star:.2f} mg/L")
+print(f"Numerical final value:   {history[-1]:.2f} mg/L")
+print(f"Difference:              {abs(C_star - history[-1]):.4f} mg/L")
+```
+
+**Answer to task B2**
+Concentrations of pollutions increased at a faster rate when starting from a polluted lake, .....
+
+```{python}
+# ---- Parameters ----
+V = 1.0e6        # lake volume (m^3)
+Q = 5.0e3        # river inflow (m^3 per day)
+C_in = 10.0      # incoming concentration (mg/L)
+k = 0.05         # in-lake decay rate (per day)
+
+# ---- Time settings ----
+dt = 1.0         # time step (days)
+days = 200
+
+# ---- Initial condition ----
+C = 20.0          # clean lake
+
+# ---- Storage ----
+history = [C]
+
+# ---- Time loop ----
+for _ in range(days):
+    dCdt = (Q * C_in - Q * C - k * V * C) / V   # the rate of change
+    C = C + dCdt * dt                            # forward difference
+    history.append(C)
+
+# ---- A quick look at the numbers ----
+print(f"Started at {history[0]:.2f} mg/L")
+print(f"After 10 days: {history[10]:.2f} mg/L")
+print(f"After 50 days: {history[50]:.2f} mg/L")
+print(f"After {days} days: {history[-1]:.2f} mg/L")
+```
+
+**Answer to task B3**
 
 ```{python}
 # your code here
@@ -66,7 +253,7 @@ ax.set_title("...")
 plt.show()
 ```
 
-**Answer to task B1:** _(short answer)_
+
 
 ## Reflection
 
