@@ -81,8 +81,6 @@ The two show commands are counting the number of turtles (agents) that are withi
 
 This model simulates 20 agents where the patch colour is altered if the agent is on it. 
 
-**Note** all code was done in the command centre... not code...
-
 ```lisp
 ;; 
 to setup
@@ -107,7 +105,7 @@ end
 ```
 **Answer to task B1:**
 
-![Part A: Command Centre warm-up](./images/part3.2_wandering_agent_208ticks.png){width=70%}
+![Part B: Build a “wandering agents” model](./images/part3.2_wandering_agent_208ticks.png){width=70%}
 
 **Answer to task B2:**
 0
@@ -115,9 +113,6 @@ end
 **Answer to task B3:**
 
 The monitor value slows down as it changes over time. This is because as fewer 'green' patches are left and the likelihood of a turtle interacting with the green patch, and thus turn it brown, is reduced. 
-
-
-## Part B: Experiments
 
 Record your runs in a Markdown table:
 
@@ -140,17 +135,43 @@ ax.set_title("...")
 plt.show()
 ```
 
-**Answer to task B1:** _(short answer)_
 
 ## Part C: Model extension
 
 Paste the modified NetLogo code and embed a screenshot of the extended model:
 
 ```netlogo
-;; your modified code here
+;; 
+to setup
+  clear-all
+  ask patches [ set pcolor green ]
+  create-turtles 200 [
+    setxy random-xcor random-ycor
+    set color white
+  ]
+  reset-ticks
+end
+
+to go
+  ask turtles [
+    right random 50
+    left random 50
+    forward 1
+    if pcolor = green [ set pcolor brown ]
+  ]
+  tick
+end
 ```
 
-![Replace with your caption](images/your-extension-screenshot.png){width=70%}
+**Answer to task C1**
+
+It takes much less time to turn the world darker (c. 60 ticks to do so) when there are more turtles.
+
+**Answer to task C2**
+
+The world darkens much faster again (less than 40-50 ticks)
+
+![Part C: Model extension](images/your-extension-screenshot.png){width=70%}
 
 **Answer to task C1:** _(short answer)_
 
