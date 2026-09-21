@@ -1,0 +1,58 @@
+{
+  "author": {
+    "email": "amrdc-help@ssec.wisc.edu",
+    "name": "Antarctic Meteorological Research and Data Center"
+  },
+  "description": "The compiled dataset of meteorological records from Antarctic automatic weather stations (AntAWS Dataset) is 3-hourly, daily and monthly resolved with quality control. The quality control includes the exclusion the records of sensor measurement range, physically anomalous values, and unrealistically rapid synoptic changes, checking the possible warm biases in the summer months, and a visual cross-comparison with ERA5 and MAR data. The AntAWS includes the measurements of five parameters (i.e., air temperature, air pressure, relative humidity, and wind speed and direction) by 267 AWSs available from 1980 to 2021. In this dataset, two sets of the daily and monthly products were calculated using the 25% and 75% thresholds, i.e., at least two and six 3-hourly quality-controlled observation values available. After the quality control, records from 63 AWSs span more than 20 years, and 27 AWSs cover more than 30 years.\r\n\r\nWang, Y., Zhang, X., Ning, W., Lazzara, M. A., Ding, M., Reijmer, C. H., Smeets, P. C. J. P., Grigioni, P., Heil, P., Thomas, E. R., Mikolajczyk, D., Welhouse, L. J., Keller, L. M., Zhai, Z., Sun, Y., and Hou, S. The AntAWS dataset: a compilation of Antarctic automatic weather station observations. Earth System Science Data, Volume 15, Issue 1, 2023, pp. 411-429, https://doi.org/10.5194/essd-15-411-2023.",
+  "extras": {
+    "Categories": "Automatic Weather Station",
+    "Citation": "Yetang Wang, Xueying Zhang, Wentao Ning, Matthew A. Lazzara, Minghu Ding, Carleen H. Reijmer, Paul C. J. P. Smeets, Paolo Grigioni, Petra Heil, Elizabeth R. Thomas, David Mikolajczyk, Lee J. Welhouse, Linda M. Keller, Zhaosheng Zhai, Yuqi Sun, and Shugui Hou, 2022: AntAWS Dataset: A compilation of Antarctic automatic weather station observations. Version 1.0. AMRDC Data Repository, accessed DD-MM-YYYY, https://doi.org/10.48567/key7-ch19.",
+    "Collection Begin Date": "1980-01-01",
+    "Collection End Date": "2021-12-31",
+    "DOI": "https://doi.org/10.48567/key7-ch19",
+    "Data Quality": "Quality-controlled",
+    "Format": "CSV"
+  },
+  "keywords": [
+    "Automatic weather stations",
+    "Barometric pressure",
+    "Humidity",
+    "Temperature",
+    "Weather data recorders",
+    "Wind"
+  ],
+  "license": {
+    "title": "Creative Commons Attribution",
+    "type": "cc-by",
+    "url": "http://www.opendefinition.org/licenses/cc-by"
+  },
+  "metadata_modified": "2026-06-17T17:20:32.004249",
+  "name": "antaws-dataset",
+  "resources": [
+    {
+      "format": "ZIP",
+      "name": "antawsvers2-zip",
+      "path": "https://amrdcdata.ssec.wisc.edu/dataset/d0a288f0-1e18-42b4-bdb2-34d831442eb1/resource/66e8e45e-a488-4292-a9cc-a0ee10204601/download/antawsvers2.zip",
+      "title": "AntAWSvers2.zip"
+    },
+    {
+      "format": "ZIP",
+      "name": "aws-location-shapefiles-zip",
+      "path": "https://amrdcdata.ssec.wisc.edu/dataset/d0a288f0-1e18-42b4-bdb2-34d831442eb1/resource/7ebf36d9-71fe-4580-b4db-803f395b5c5f/download/aws_location_shapefiles.zip",
+      "title": "AWS_location_shapefiles.zip"
+    },
+    {
+      "format": "ZIP",
+      "name": "all-resource-data",
+      "path": "https://amrdcdata.ssec.wisc.edu/dataset/d0a288f0-1e18-42b4-bdb2-34d831442eb1/resource/08e7f7f7-c7ac-492d-a6c8-6c78d9fa98cd/download/antaws-dataset-ikf55hjx.zip",
+      "title": "All resource data"
+    }
+  ],
+  "sources": [
+    {
+      "name": "Yetang Wang, Xueying Zhang, Wentao Ning, Matthew A. Lazzara, Minghu Ding, Carleen H. Reijmer, Paul C. J. P. Smeets, Paolo Grigioni, Petra Heil, Elizabeth R. Thomas, David Mikolajczyk, Lee J. Welhouse, Linda M. Keller, Zhaosheng Zhai, Yuqi Sun, and Shugui Hou"
+    }
+  ],
+  "title": "AntAWS Dataset: A compilation of Antarctic automatic weather station observations.",
+  "version": "2022-12"
+}

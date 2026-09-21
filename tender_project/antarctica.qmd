@@ -1,0 +1,147 @@
+---
+title: "Tender: Antarctic Climate Station Reconstruction"
+author: "Ashley Walsh"
+date: today
+---
+
+# Overview
+
+Data from Antarctic Weather Stations (AWS) is used to reconstruct climate conditions for a hindcast model for a specific region of Antarctica for the purpose of development of a new station base. The data includes temperature, wind speed, and other meteorological variables collected from various AWS locations across the continent.
+
+New station location: 83°48'10.68"S and 146°35'20.85"E
+
+Converts to WGS84 Antarctic Polar Stereographic coordinates: X = 371154.261133, Y = -562545.764708
+
+This data was downloaded from [AMRDC Data Repository](https://amrdcdata.ssec.wisc.edu/dataset/antaws-dataset) on 18/10/2026 and included shapefiles of AWS locations and a dataset of climate variables in different resolutions.
+
+# Setup
+
+Import necessary libraries for data manipulation and visualization.
+
+```{python}
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import geopandas as gpd
+from scipy.spatial.distance import cdist
+```
+
+## Read in shapefiles
+
+Read in shapefile for Antarctic Weather Stations (AWS) and the base map polygon for Antarctica. 
+
+```{python}
+# name shapefiles paths
+aws_path = "shapefile/267AWS.shp"
+cais_path = "shapefile/CAIS.shp"
+polygon_path = "shapefile/cst10_polygon.shp"
+
+# read the shapefiles using geopandas
+aws_data = gpd.read_file(aws_path)
+cais_data = gpd.read_file(cais_path)
+polygon_data = gpd.read_file(polygon_path)
+
+# check data
+print(aws_data.head())
+print(cais_data.head())
+print(polygon_data.head())
+
+# check coordinate reference system
+print("Base Map CRS:", polygon_data.crs)
+print("Points CRS Before:", aws_data.crs)
+print("cais:", cais_data.crs)
+
+# reproject aws station to match base map
+points_projected = aws_data.to_crs(polygon_data.crs)
+
+points_projected["geometry"] = points_projected["geometry"].scale(xfact=0.001, yfact=0.001, origin=(0, 0))
+polygon_data["geometry"] = polygon_data["geometry"].scale(xfact=0.001, yfact=0.001, origin=(0, 0))
+```
+
+
+
+# Mapping Antarctic Weather Stations
+
+```{python}
+# create overall figure and axes
+fig, ax = plt.subplots(figsize=(10, 10))
+
+# create a base map with polygon data
+polygon_data.plot(ax=ax, color='lightgrey', edgecolor='black')
+
+# plot AWS stations onto base map
+points_projected.plot(ax=ax, color='blue', markersize=25, label='AWS Stations')
+
+# add axis labels
+ax.set_xlabel("Polar Stereographic X Coordinate (km)")
+ax.set_ylabel("Polar Stereographic Y Coordinate (km)")
+
+
+texts = []
+for idx, row in points_projected.iterrows():
+    x = row.geometry.x
+    y = row.geometry.y
+    station_name = row['zhandian']
+    
+    ax.annotate(station_name, (x, y), 
+                textcoords="offset points", # How to position the text
+                xytext=(0,-5),               # Distance from text to points (x,y)
+                ha='left', va='top',
+                fontsize=6)                # Horizontal alignment
+    #ax.text(x + 50, y + 50, station_name, fontsize=6, ha='left', va='top')
+
+
+ax.annotate('New Station Location', xy=(371.154, -562.546), xytext=(371.154, -562.546),
+            arrowprops=dict(facecolor='red', shrink=0.05), fontsize=8, color='red')
+            
+# ax.ticklabel_format(style='plain')  # Set tick label format to plain
+plt.show()
+```
+
+# Calculating Distances Between Stations
+
+Calculate the pairwise distances between all AWS stations using their projected coordinates. This will create a distance matrix that can be used for further analysis.
+
+```{python}
+# extract the x and y coordinates of the projected points into a 2D array
+XA = np.column_stack((points_projected.geometry.x, points_projected.geometry.y))
+
+# calculate the pairwise Euclidean distance matrix
+distance_matrix = cdist(XA, XA, metric='euclidean')
+
+# sense checks!
+print(f"Matrix shape: {distance_matrix.shape}") # Output: (N, N)
+print(max(distance_matrix.flatten())) # Output: Maximum distance
+print(min(distance_matrix.flatten())) # Output: Minimum distance (should be 0)
+```
+
+
+```{python}
+# extract labels from your original GeoDataFrame
+station_labels = points_projected['zhandian'].tolist()
+
+# wrap the raw cdist matrix in a pandas DataFrame
+labeled_matrix = pd.DataFrame(distance_matrix, index=station_labels, columns=station_labels)
+
+# look up specific distances instantly by name
+# print(labeled_matrix.loc['Station_A', 'Station_B'])
+```
+
+
+```{python}
+## base code if you want to find the most distant stations
+
+# 1. Flatten the grid into rows of point pairs
+pairs_df = labeled_matrix.stack().reset_index()
+pairs_df.columns = ['Origin', 'Destination', 'Distance']
+
+# 2. Filter out self-matches (where distance is 0)
+pairs_df = pairs_df[pairs_df['Origin'] != pairs_df['Destination']]
+
+# 3. Sort by distance descending to see the most distant points at the top
+furthest_stations = pairs_df.sort_values(by='Distance', ascending=False)
+
+# Display the top 10 most distant pairs
+print(furthest_stations.head(10))
+
+```

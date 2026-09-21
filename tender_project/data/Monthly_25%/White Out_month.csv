@@ -1,0 +1,2 @@
+Year,Month,Temperature(¡æ),wt_T,Pressure(hPa),wt_P,Wind Speed(m/s),wt_WS,Wind Direction,wt_WD,Relative Humidity(%),wt_RH,Vector Wind Speed(m/s),Vector Wind Direction(¡ã),wt_V
+1998,12,-6.51,0.455645161,984.03,1,2.67,0.939516129,185.36,1,64.58,0.983870968,0.4,184.37,0.939516129
