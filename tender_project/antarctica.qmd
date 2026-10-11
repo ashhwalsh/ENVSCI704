@@ -2,9 +2,10 @@
 title: "Tender: Antarctic Climate Station Reconstruction"
 author: "Ashley Walsh"
 date: today
-code-format: true
 format:
   html:
+    toc: true
+    code-fold: false
     embed-resources: true
 ---
 
